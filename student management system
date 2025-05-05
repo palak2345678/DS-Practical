@@ -1,0 +1,180 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Student {
+    int roll;
+    char name[50];
+    float marks;
+    struct Student* next;
+} Student;
+
+Student* head = NULL;
+
+Student* createStudent(int roll, char name[], float marks) {
+    Student* newNode = (Student*)malloc(sizeof(Student));
+    newNode->roll = roll;
+    strcpy(newNode->name, name);
+    newNode->marks = marks;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void insertStudent(int roll, char name[], float marks) {
+    Student* newNode = createStudent(roll, name, marks);
+    newNode->next = head;
+    head = newNode;
+    printf("Student inserted.\n");
+}
+
+void deleteStudent(int roll) {
+    Student *temp = head, *prev = NULL;
+
+    while (temp != NULL && temp->roll != roll) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Student not found.\n");
+        return;
+    }
+
+    if (prev == NULL)
+        head = temp->next;
+    else
+        prev->next = temp->next;
+
+    free(temp);
+    printf("Student deleted.\n");
+}
+
+void updateStudent(int roll) {
+    Student* temp = head;
+    while (temp != NULL) {
+        if (temp->roll == roll) {
+            printf("Enter new name: ");
+            scanf("%s", temp->name);
+            printf("Enter new marks: ");
+            scanf("%f", &temp->marks);
+            printf("Student updated.\n");
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Student not found.\n");
+}
+
+void displayStudents() {
+    Student* temp = head;
+    if (!temp) {
+        printf("No student records.\n");
+        return;
+    }
+    printf("\nStudent List:\n");
+    while (temp) {
+        printf("Roll: %d | Name: %s | Marks: %.2f\n", temp->roll, temp->name, temp->marks);
+        temp = temp->next;
+    }
+}
+
+void sortByName() {
+    if (!head) return;
+    Student *i, *j;
+    for (i = head; i && i->next; i = i->next) {
+        for (j = i->next; j; j = j->next) {
+            if (strcmp(i->name, j->name) > 0) {
+                // Swap
+                int tRoll = i->roll;
+                float tMarks = i->marks;
+                char tName[50];
+                strcpy(tName, i->name);
+
+                i->roll = j->roll;
+                i->marks = j->marks;
+                strcpy(i->name, j->name);
+
+                j->roll = tRoll;
+                j->marks = tMarks;
+                strcpy(j->name, tName);
+            }
+        }
+    }
+    printf("Sorted by name.\n");
+}
+
+void sortByMarks() {
+    if (!head) return;
+    Student *i, *j;
+    for (i = head; i && i->next; i = i->next) {
+        for (j = i->next; j; j = j->next) {
+            if (i->marks < j->marks) {
+                // Swap
+                int tRoll = i->roll;
+                float tMarks = i->marks;
+                char tName[50];
+                strcpy(tName, i->name);
+
+                i->roll = j->roll;
+                i->marks = j->marks;
+                strcpy(i->name, j->name);
+
+                j->roll = tRoll;
+                j->marks = tMarks;
+                strcpy(j->name, tName);
+            }
+        }
+    }
+    printf("Sorted by marks.\n");
+}
+
+int main() {
+    int choice, roll;
+    float marks;
+    char name[50];
+
+    while (1) {
+        printf("\n--- Student Management ---\n");
+        printf("1. Insert Student\n2. Delete Student\n3. Update Student\n4. Display Students\n");
+        printf("5. Sort by Name\n6. Sort by Marks\n7. Exit\n");
+        printf("Choose an option: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            printf("Roll No: ");
+            scanf("%d", &roll);
+            printf("Name: ");
+            scanf("%s", name);
+            printf("Marks: ");
+            scanf("%f", &marks);
+            insertStudent(roll, name, marks);
+            break;
+        case 2:
+            printf("Enter roll no to delete: ");
+            scanf("%d", &roll);
+            deleteStudent(roll);
+            break;
+        case 3:
+            printf("Enter roll no to update: ");
+            scanf("%d", &roll);
+            updateStudent(roll);
+            break;
+        case 4:
+            displayStudents();
+            break;
+        case 5:
+            sortByName();
+            break;
+        case 6:
+            sortByMarks();
+            break;
+        case 7:
+            exit(0);
+        default:
+            printf("Invalid choice.\n");
+        }
+    }
+
+    return 0;
+}
